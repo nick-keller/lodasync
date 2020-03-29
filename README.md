@@ -1,6 +1,31 @@
-# Design principles
+# Lodasync
+![npm](https://img.shields.io/npm/v/lodasync)
+![Travis (.org)](https://img.shields.io/travis/nick-keller/lodasync)
+![Coveralls github](https://img.shields.io/coveralls/github/nick-keller/lodasync)
 
-## Curried parameters
+Lodasync is an asynchronous functional programing utility library heavily 
+inspired by [lodash/fp](https://lodash.com/). 
+It has no dependencies, is lightweight, has a strong focus on performance, 
+and is fully tested and documented.
+
+## Getting Started
+Install Lodasync using npm.
+```
+npm i lodasync
+```
+
+```js
+import { mapAync } from 'lodasync'
+ 
+const getUser = async(id) => { /*...*/ }
+
+const users = await mapAync(getUser, [42, 68])
+```
+
+## Design principles
+This library is developed with a few principles in mind.
+
+### Curried parameters
 All methods are curried so you can write:
 ```js
 await reduceAsync(callback, initialValue, collection)
@@ -15,7 +40,7 @@ const sumByPriceAsync = reduceAsync(async(sum, obj) => sum + await getPrice(obj)
 const sum = await sumByPriceAsync(collection)
 ```
 
-## Promises as parameters
+### Promises as parameters
 All parameters accept promises, you do not need to await them:
 ```js
 // Don't
@@ -25,7 +50,7 @@ await filterAsync(isUserAuthorized, await users)
 await filterAsync(isUserAuthorized, users)
 ```
 
-## Async callbacks
+### Async callbacks
 All callbacks can be async:
 ```js
 const isUserAuthorized = async(user) => { /*...*/ }
@@ -33,7 +58,7 @@ const isUserAuthorized = async(user) => { /*...*/ }
 await filterAsync(isUserAuthorized, users)
 ```
 
-## Resolved callbacks parameters
+### Resolved callbacks parameters
 Received arguments are always resolved:
 ```js
 const getUser = async(id) => { /*...*/ }
@@ -56,13 +81,13 @@ await mapAsync((user, index, array) => array[0].name, [getUser(1), getUser(2)])
 await mapAsync(async(user, index, array) => (await array[0]).name, [getUser(1), getUser(2)])
 ```
 
-## Callbacks called in parallel
+### Callbacks called in parallel
 When possible, callbacks are always called in parallel, on all elements.
 
 This is also true for methods like `find` that usually stop on the first match.
 This is done to maximize parallelism.
 
-## Promises as return values
+### Promises as return values
 The return value is always a promise.
 ```js
 // Still need to await

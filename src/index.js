@@ -1,0 +1,27 @@
+const { everyAsync } = require('./everyAsync')
+const { filterAsync } = require('./filterAsync')
+const { findAsync } = require('./findAsync')
+const { findIndexAsync } = require('./findIndexAsync')
+const { flatMapAsync } = require('./flatMapAsync')
+const { flowAsync } = require('./flowAsync')
+const { getAsync } = require('./getAsync')
+const { getOrAsync } = require('./getOrAsync')
+const { groupByAsync } = require('./groupByAsync')
+const { mapAsync } = require('./mapAsync')
+const { reduceAsync } = require('./reduceAsync')
+const { someAsync } = require('./someAsync')
+const { uniqByAsync } = require('./uniqByAsync')
+
+module.exports.everyAsync = everyAsync
+module.exports.filterAsync = filterAsync
+module.exports.findAsync = findAsync
+module.exports.findIndexAsync = findIndexAsync
+module.exports.flatMapAsync = flatMapAsync
+module.exports.flowAsync = flowAsync
+module.exports.getAsync = getAsync
+module.exports.getOrAsync = getOrAsync
+module.exports.groupByAsync = groupByAsync
+module.exports.mapAsync = mapAsync
+module.exports.reduceAsync = reduceAsync
+module.exports.someAsync = someAsync
+module.exports.uniqByAsync = uniqByAsync
