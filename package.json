@@ -1,15 +1,18 @@
 {
   "name": "lodasync",
   "version": "1.0.0",
-  "description": "Utility functions with promises",
-  "main": "index.js",
+  "description": "Async utility functions",
+  "main": "src/index.js",
+  "repository": "nick-keller/lodasync",
   "scripts": {
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "ci": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Nicolas Keller",
+  "license": "MIT",
   "devDependencies": {
+    "coveralls": "^3.0.11",
     "eslint": "^6.8.0",
     "jest": "^25.1.0"
   }

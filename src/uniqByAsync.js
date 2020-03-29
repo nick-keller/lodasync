@@ -1,9 +1,11 @@
 const { mapAsync } = require('./mapAsync')
 const { unCurry } = require('./internals/unCurry')
-const { resolveCollectionAndValues } = require('./internals/resolveCollectionAndValues')
+const {
+  resolveCollectionAndValues,
+} = require('./internals/resolveCollectionAndValues')
 
 const uniqFn = ([collection, values]) => {
-  const length = collection.length
+  const { length } = collection
   const result = []
   const seen = new Set()
 

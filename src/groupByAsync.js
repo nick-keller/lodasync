@@ -1,14 +1,16 @@
 const { mapAsync } = require('./mapAsync')
 const { unCurry } = require('./internals/unCurry')
-const { resolveCollectionAndValues } = require('./internals/resolveCollectionAndValues')
+const {
+  resolveCollectionAndValues,
+} = require('./internals/resolveCollectionAndValues')
 
 const groupFn = ([collection, keys]) => collection.reduce((acc, cur, i) => {
   const key = keys[i]
 
-  if (acc.hasOwnProperty(key)) {
+  if (Object.prototype.hasOwnProperty.call(acc, key)) {
     acc[key].push(cur)
   } else {
-    acc[key] = [ cur ]
+    acc[key] = [cur]
   }
 
   return acc

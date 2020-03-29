@@ -7,7 +7,7 @@ test('someAsync true', async() => {
   await expect(
     someAsync(
       callback,
-      p([p(7), p(6), p(13)])
+      p([p(7), p(6), p(13)]),
     ),
   ).resolves.toEqual(true)
 
@@ -24,7 +24,7 @@ test('someAsync false', async() => {
   await expect(
     someAsync(
       callback,
-      p([p(7), p(13)])
+      p([p(7), p(13)]),
     ),
   ).resolves.toEqual(false)
 

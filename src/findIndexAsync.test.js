@@ -7,7 +7,7 @@ test('findAsync', async() => {
   await expect(
     findIndexAsync(
       callback,
-      p([p(7), p(6), p(9), p(13)])
+      p([p(7), p(6), p(9), p(13)]),
     ),
   ).resolves.toEqual(1)
 
@@ -25,7 +25,7 @@ test('findAsync no results', async() => {
   await expect(
     findIndexAsync(
       callback,
-      p([p(7), p(13)])
+      p([p(7), p(13)]),
     ),
   ).resolves.toEqual(-1)
 

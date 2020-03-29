@@ -11,8 +11,8 @@ await reduceAsync(callback)(initialValue)(collection)
 
 This allows you to create functions like so:
 ```js
-const sumByPriceAsync = reduceAsync(async(sum, obj) => sum + await obj.price, 0)
-await sumByPriceAsync(collection)
+const sumByPriceAsync = reduceAsync(async(sum, obj) => sum + await getPrice(obj), 0)
+const sum = await sumByPriceAsync(collection)
 ```
 
 ## Promises as parameters

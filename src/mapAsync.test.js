@@ -7,7 +7,7 @@ test('mapAsync', async() => {
   await expect(
     mapAsync(
       callback,
-      p([p(7), p(5), p(13)])
+      p([p(7), p(5), p(13)]),
     ),
   ).resolves.toEqual([14, 10, 26])
 

@@ -7,7 +7,7 @@ test('flatMapAsync', async() => {
   await expect(
     flatMapAsync(
       callback,
-      p([p(7), p(6), p(13)])
+      p([p(7), p(6), p(13)]),
     ),
   ).resolves.toEqual([7, 6, 3, 13])
 

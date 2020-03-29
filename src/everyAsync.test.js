@@ -7,7 +7,7 @@ test('everyAsync true', async() => {
   await expect(
     everyAsync(
       callback,
-      p([p(12), p(6), p(8)])
+      p([p(12), p(6), p(8)]),
     ),
   ).resolves.toEqual(true)
 
@@ -24,7 +24,7 @@ test('everyAsync false', async() => {
   await expect(
     everyAsync(
       callback,
-      p([p(7), p(6)])
+      p([p(7), p(6)]),
     ),
   ).resolves.toEqual(false)
 

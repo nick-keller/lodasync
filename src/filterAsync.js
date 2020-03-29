@@ -1,8 +1,11 @@
 const { mapAsync } = require('./mapAsync')
 const { unCurry } = require('./internals/unCurry')
-const { resolveCollectionAndValues } = require('./internals/resolveCollectionAndValues')
+const {
+  resolveCollectionAndValues,
+} = require('./internals/resolveCollectionAndValues')
 
-const filterFn = ([collection, filterResult]) => collection.filter((_, i) => filterResult[i])
+const filterFn = ([collection, filterResult]) => collection
+  .filter((_, i) => filterResult[i])
 
 const filterAsync = callback => collection => Promise
   .all([

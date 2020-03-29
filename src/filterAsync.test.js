@@ -7,7 +7,7 @@ test('filterAsync', async() => {
   await expect(
     filterAsync(
       callback,
-      p([p(7), p(6), p(9), p(13)])
+      p([p(7), p(6), p(9), p(13)]),
     ),
   ).resolves.toEqual([7, 13])
 

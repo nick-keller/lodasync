@@ -7,7 +7,7 @@ test('groupByAsync', async() => {
   await expect(
     groupByAsync(
       callback,
-      p([p(7), p(3), p(4), p(13), p(6)])
+      p([p(7), p(3), p(4), p(13), p(6)]),
     ),
   ).resolves.toEqual({
     0: [4, 6],
