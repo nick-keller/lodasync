@@ -34,3 +34,16 @@ test('findAsync no results', async() => {
     [13, 1, [p(), p()]],
   ])
 })
+
+test('findAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    findAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual(undefined)
+
+  expect(callback.mock.calls).toEqual([])
+})

@@ -18,3 +18,17 @@ test('reduceAsync', async() => {
     [21, 13, 2, [p(), p(), p()]],
   ])
 })
+
+test('reduceAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    reduceAsync(
+      callback,
+      p(9),
+      p([]),
+    ),
+  ).resolves.toEqual(9)
+
+  expect(callback.mock.calls).toEqual([])
+})

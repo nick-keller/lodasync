@@ -17,3 +17,16 @@ test('flatMapAsync', async() => {
     [13, 2, [p(), p(), p()]],
   ])
 })
+
+test('flatMapAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    flatMapAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual([])
+
+  expect(callback.mock.calls).toEqual([])
+})

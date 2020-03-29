@@ -205,6 +205,62 @@ await groupByAsync(getFirstName, getUsers())
 ## mapAsync(callback, collection)
 Implementation of native [Array.prototype.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
 
+## maxByAsync(callback, collection)
+Computes the maximum value of `collection` by invoking `callback` for each element 
+to generate the criterion by which the value is ranked.
+
+### Arguments
+- `callback`\
+  A function that should return a criterion for each element.
+  It takes the following arguments:
+  - `element`\
+    The current element in the collection.
+  - `index`\
+    The index of the current element in the collection.
+  - `collection`\
+    The collection that `maxByAsync` was called on.
+- `collection`\
+  The collection to iterate over.
+
+### Return value
+The maximum value of `collection`, `undefined` if the collection is empty.
+
+### Example
+```js
+const getItemPrice = async(item) => { /*...*/ }
+
+await maxByAsync(getItemPrice, [item1, item2, item3])
+// => item3
+```
+
+## minByAsync(callback, collection)
+Computes the minimum value of `collection` by invoking `callback` for each element 
+to generate the criterion by which the value is ranked.
+
+### Arguments
+- `callback`\
+  A function that should return a criterion for each element.
+  It takes the following arguments:
+  - `element`\
+    The current element in the collection.
+  - `index`\
+    The index of the current element in the collection.
+  - `collection`\
+    The collection that `minByAsync` was called on.
+- `collection`\
+  The collection to iterate over.
+
+### Return value
+The minimum value of `collection`, `undefined` if the collection is empty.
+
+### Example
+```js
+const getItemPrice = async(item) => { /*...*/ }
+
+await minByAsync(getItemPrice, [item1, item2, item3])
+// => item2
+```
+
 ## reduceAsync(callback, initialValue, collection)
 Implementation of native [Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
 

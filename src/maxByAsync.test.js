@@ -1,15 +1,15 @@
 const { p } = require('./internals/testUtils')
-const { filterAsync } = require('./filterAsync')
+const { maxByAsync } = require('./maxByAsync')
 
-test('filterAsync', async() => {
+test('maxByAsync', async() => {
   const callback = jest.fn(x => p(x % 3))
 
   await expect(
-    filterAsync(
+    maxByAsync(
       callback,
       p([p(7), p(6), p(9), p(13)]),
     ),
-  ).resolves.toEqual([7, 13])
+  ).resolves.toEqual(7)
 
   expect(callback.mock.calls).toEqual([
     [7, 0, [p(), p(), p(), p()]],
@@ -19,15 +19,15 @@ test('filterAsync', async() => {
   ])
 })
 
-test('filterAsync empty array', async() => {
+test('maxByAsync empty array', async() => {
   const callback = jest.fn()
 
   await expect(
-    filterAsync(
+    maxByAsync(
       callback,
       p([]),
     ),
-  ).resolves.toEqual([])
+  ).resolves.toEqual(undefined)
 
   expect(callback.mock.calls).toEqual([])
 })

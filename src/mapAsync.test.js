@@ -17,3 +17,16 @@ test('mapAsync', async() => {
     [13, 2, [p(), p(), p()]],
   ])
 })
+
+test('mapAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    mapAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual([])
+
+  expect(callback.mock.calls).toEqual([])
+})

@@ -33,3 +33,16 @@ test('someAsync false', async() => {
     [13, 1, [p(), p()]],
   ])
 })
+
+test('someAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    someAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual(false)
+
+  expect(callback.mock.calls).toEqual([])
+})

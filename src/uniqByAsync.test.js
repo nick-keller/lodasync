@@ -19,3 +19,16 @@ test('uniqByAsync', async() => {
     [6, 4, [p(), p(), p(), p(), p()]],
   ])
 })
+
+test('uniqByAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    uniqByAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual([])
+
+  expect(callback.mock.calls).toEqual([])
+})

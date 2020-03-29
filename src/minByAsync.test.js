@@ -1,15 +1,15 @@
 const { p } = require('./internals/testUtils')
-const { filterAsync } = require('./filterAsync')
+const { minByAsync } = require('./minByAsync')
 
-test('filterAsync', async() => {
+test('minByAsync', async() => {
   const callback = jest.fn(x => p(x % 3))
 
   await expect(
-    filterAsync(
+    minByAsync(
       callback,
       p([p(7), p(6), p(9), p(13)]),
     ),
-  ).resolves.toEqual([7, 13])
+  ).resolves.toEqual(6)
 
   expect(callback.mock.calls).toEqual([
     [7, 0, [p(), p(), p(), p()]],
@@ -19,15 +19,15 @@ test('filterAsync', async() => {
   ])
 })
 
-test('filterAsync empty array', async() => {
+test('minByAsync empty array', async() => {
   const callback = jest.fn()
 
   await expect(
-    filterAsync(
+    minByAsync(
       callback,
       p([]),
     ),
-  ).resolves.toEqual([])
+  ).resolves.toEqual(undefined)
 
   expect(callback.mock.calls).toEqual([])
 })

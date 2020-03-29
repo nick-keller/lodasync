@@ -22,3 +22,16 @@ test('groupByAsync', async() => {
     [6, 4, [p(), p(), p(), p(), p()]],
   ])
 })
+
+test('groupByAsync empty array', async() => {
+  const callback = jest.fn()
+
+  await expect(
+    groupByAsync(
+      callback,
+      p([]),
+    ),
+  ).resolves.toEqual({})
+
+  expect(callback.mock.calls).toEqual([])
+})
