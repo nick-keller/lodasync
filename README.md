@@ -33,6 +33,7 @@ working with promises, arrays, and asynchronous callbacks.
   - [minByAsync(callback, collection)](#minbyasynccallback-collection)
   - [reduceAsync(callback, initialValue, collection)](#reduceasynccallback-initialvalue-collection)
   - [someAsync(callback, collection)](#someasynccallback-collection)
+  - [sortByAsync(callback, collection)](#sortbyasynccallback-collection)
   - [uniqByAsync(callback, collection)](#uniqbyasynccallback-collection)
 ## Getting started
 Install Lodasync using npm.
@@ -322,6 +323,41 @@ Implementation of native [Array.prototype.reduce()](https://developer.mozilla.or
 
 ## someAsync(callback, collection)
 Implementation of native [Array.prototype.some()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some).
+
+## sortByAsync(callback, collection)
+Sorts `collection` by invoking `callback` for each element to generate the 
+criterion by which the value is ranked.
+This method performs a stable sort, that is, it preserves the original sort order of equal elements.
+
+The criterion can be 
+- a number: using number comparison
+- a string: using string comparison
+- Infinity: always sorted at the end
+- -Infinity: always sorted at the beginning
+
+### Arguments
+- `callback`\
+  A function that should return a criterion for each element.
+  It takes the following arguments:
+  - `element`\
+    The current element in the collection.
+  - `index`\
+    The index of the current element in the collection.
+  - `collection`\
+    The collection.
+- `collection`\
+  The collection to iterate over.
+
+### Return value
+The sorted collection.
+
+### Example
+```js
+const getItemPrice = async(item) => { /*...*/ }
+
+await sortByAsync(getItemPrice, [item7, item2, item3])
+// => [item2, item3, item7]
+```
 
 ## uniqByAsync(callback, collection)
 Creates a duplicate-free version of `collection`.

@@ -1,6 +1,6 @@
 {
   "name": "lodasync",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Async utility functions",
   "main": "src/index.js",
   "repository": "nick-keller/lodasync",
