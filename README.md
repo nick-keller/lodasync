@@ -1,7 +1,7 @@
 # Lodasync
-![npm](https://img.shields.io/npm/v/lodasync)
-![Travis (.org)](https://img.shields.io/travis/nick-keller/lodasync)
-![Coveralls github](https://img.shields.io/coveralls/github/nick-keller/lodasync)
+[![npm](https://img.shields.io/npm/v/lodasync)](https://www.npmjs.com/package/lodasync)
+[![Travis (.org)](https://img.shields.io/travis/nick-keller/lodasync)](https://travis-ci.org/github/nick-keller/lodasync)
+[![Coveralls github](https://img.shields.io/coveralls/github/nick-keller/lodasync)](https://coveralls.io/github/nick-keller/lodasync)
 
 Lodasync is an asynchronous functional programing utility library heavily 
 inspired by [lodash/fp](https://lodash.com/). 
