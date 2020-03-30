@@ -8,12 +8,38 @@ inspired by [lodash/fp](https://lodash.com/).
 It has no dependencies, is lightweight, has a strong focus on performance, 
 and is fully tested and documented.
 
-## Getting Started
+## Why Lodasync?
+Lodasync makes asynchronous JavaScript easier by taking the hassle out of 
+working with promises, arrays, and asynchronous callbacks.
+- Work with promises the way you work with synchronous code
+- Do not re-invent the wheel and rely on fully tested and documented code
+- Use functions that are performance oriented, don't waste time benchmarking yourself
+
+## Table of contents
+- [Getting started](#getting-started)
+- [Design principles](#design-principles)
+- [API](#api)
+  - [everyAsync(callback, collection)](#everyasynccallback-collection)
+  - [filterAsync(callback, collection)](#filterasynccallback-collection)
+  - [findAsync(callback, collection)](#findasynccallback-collection)
+  - [findIndexAsync(callback, collection)](#findindexasynccallback-collection)
+  - [flatMapAsync(callback, collection)](#flatmapasynccallback-collection)
+  - [flowAsync(...callbacks)](#flowasynccallbacks)
+  - [getAsync(path, object)](#getasyncpath-object)
+  - [getOrAsync(defaultValue, path, object)](#getorasyncdefaultvalue-path-object)
+  - [groupByAsync(callback, collection)](#groupbyasynccallback-collection)
+  - [mapAsync(callback, collection)](#mapasynccallback-collection)
+  - [maxByAsync(callback, collection)](#maxbyasynccallback-collection)
+  - [minByAsync(callback, collection)](#minbyasynccallback-collection)
+  - [reduceAsync(callback, initialValue, collection)](#reduceasynccallback-initialvalue-collection)
+  - [someAsync(callback, collection)](#someasynccallback-collection)
+  - [uniqByAsync(callback, collection)](#uniqbyasynccallback-collection)
+## Getting started
 Install Lodasync using npm.
 ```
 npm i lodasync
 ```
-
+In Node.js and in a browser:
 ```js
 import { mapAsync } from 'lodasync'
  
@@ -23,10 +49,16 @@ const users = await mapAsync(getUser, [42, 68])
 ```
 
 ## Design principles
-This library is developed with a few principles in mind.
+This library is developed with a few design principles in mind that should 
+provide the best developer experience possible while keeping performance at a 
+top priority. 
+
+It is recommended that you go through this list to completely 
+understand how Lodasync works and how to use it efficiently. 
 
 ### Curried parameters
-All methods are curried so you can write:
+Currying is a popular technique in functional programming, it let's you to 
+interchangeably write:
 ```js
 await reduceAsync(callback, initialValue, collection)
 await reduceAsync(callback, initialValue)(collection)
@@ -34,14 +66,33 @@ await reduceAsync(callback)(initialValue, collection)
 await reduceAsync(callback)(initialValue)(collection)
 ```
 
-This allows you to create functions like so:
+This allows you to create partially applied functions like so:
 ```js
-const sumByPriceAsync = reduceAsync(async(sum, obj) => sum + await getPrice(obj), 0)
-const sum = await sumByPriceAsync(collection)
+const getUsers = mapAsync(async(id) => await getUser(id))
+
+// Or even better
+const getUsers = mapAsync(getUser)
+
+// Which then can be called like so
+const users = await getUsers([36, 28, 76])
 ```
 
+Another common use-case for partially applied functions is chaining them with `flowAsync`:
+```js
+const getAuthorsFromPublishedArticles = flowAsync(
+  mapAsync(getArticle),
+  filterAsync(isArticlePublished),
+  flatMapAsync(getArticleAuthors),
+  uniqByAsync(getAuthorId),
+)
+
+const authors = await getAuthorsFromPublishedArticles([48, 96, 31])
+```
+
+
 ### Promises as parameters
-All parameters accept promises, you do not need to await them:
+All parameters accept promises, you do not need to await them. 
+This should let you to write cleaner code:
 ```js
 // Don't
 await filterAsync(isUserAuthorized, await users)
@@ -51,7 +102,8 @@ await filterAsync(isUserAuthorized, users)
 ```
 
 ### Async callbacks
-All callbacks can be async:
+All callbacks can be asynchronous, this is probably the most useful feature of 
+this library:
 ```js
 const isUserAuthorized = async(user) => { /*...*/ }
 
@@ -59,15 +111,13 @@ await filterAsync(isUserAuthorized, users)
 ```
 
 ### Resolved callbacks parameters
-Received arguments are always resolved:
+Received arguments are always resolved, you do not need to await them:
 ```js
-const getUser = async(id) => { /*...*/ }
-
 // Don't 
-await mapAsync(async(user) => (await user).name, [getUser(1), getUser(2)])
+await mapAsync(async(user) => (await user).name, users)
 
 // Do
-await mapAsync((user) => user.name, [getUser(1), getUser(2)])
+await mapAsync((user) => user.name, users)
 ```
 
 For arguments that are arrays, elements are not resolved:
@@ -82,10 +132,9 @@ await mapAsync(async(user, index, array) => (await array[0]).name, [getUser(1), 
 ```
 
 ### Callbacks called in parallel
-When possible, callbacks are always called in parallel, on all elements.
-
-This is also true for methods like `find` that usually stop on the first match.
-This is done to maximize parallelism.
+Callbacks are always called in parallel, and on all elements to maximize parallelism.
+This also includes methods like `findAsync` or `findIndexAsync`, even tho their 
+synchronous counterpart stops on the first match.
 
 ### Promises as return values
 The return value is always a promise.
@@ -122,8 +171,11 @@ Implementation of native [Array.prototype.findIndex()](https://developer.mozilla
 Implementation of native [Array.prototype.flatMap()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap).
 
 ## flowAsync(...callbacks)
-Creates a function that return the result of invoking all callbacks in series, 
+Creates a function that returns the result of invoking all callbacks in series, 
 where each successive invocation is supplied the return value of the previous.
+
+Note that callbacks do not have to be asynchronous, you can mix synchronous 
+and asynchronous code.
 
 ### Example
 ```js
@@ -159,17 +211,22 @@ The resolved value.
 
 ### Example
 ```js
-const user = {
-  name: Promise.resolve('John'),
-}
-
 const article = {
- author: Promise.resolve(user),
+ authors: Promise.resolve([
+   {
+     name: Promise.resolve('John'),
+   },
+   {
+     name: Promise.resolve('Carol'),
+   },
+  ]),
 }
 
-await getOrAsync(null, 'author.name', article) // => 'John'
+await getOrAsync(null, 'authors.0.name', article) // => 'John'
 // Or
-await getOrAsync(null, ['author', 'name'], article) // => 'John'
+await getOrAsync(null, ['author', 0, 'name'], article) // => 'John'
+
+await getOrAsync('defaultName', 'authors.3.name', article) // => 'defaultName'
 ```
 
 ## groupByAsync(callback, collection)
@@ -186,7 +243,7 @@ The corresponding value of each key is an array of elements responsible for gene
   - `index`\
     The index of the current element in the collection.
   - `collection`\
-    The collection that `groupByAsync` was called on.
+    The collection.
 - `collection`\
   The collection to iterate over.
 
@@ -195,11 +252,10 @@ The composed aggregate object.
 
 ### Example
 ```js
-const getUsers = async() => { /*...*/ }
 const getFirstName = async(user) => { /*...*/ }
 
-await groupByAsync(getFirstName, getUsers())
-// => { John: [user1, user2, ...], Carol: [user3, ...] }
+await groupByAsync(getFirstName, [john1, carol1, john2])
+// => { John: [john1, john2], Carol: [carol1] }
 ```
 
 ## mapAsync(callback, collection)
@@ -218,7 +274,7 @@ to generate the criterion by which the value is ranked.
   - `index`\
     The index of the current element in the collection.
   - `collection`\
-    The collection that `maxByAsync` was called on.
+    The collection.
 - `collection`\
   The collection to iterate over.
 
@@ -246,7 +302,7 @@ to generate the criterion by which the value is ranked.
   - `index`\
     The index of the current element in the collection.
   - `collection`\
-    The collection that `minByAsync` was called on.
+    The collection.
 - `collection`\
   The collection to iterate over.
 
@@ -282,7 +338,7 @@ The order of result values is determined by the order they occur in the array.
   - `index`\
     The index of the current element in the collection.
   - `collection`\
-    The collection that `uniqByAsync` was called on.
+    The collection.
 - `collection`\
   The collection to iterate over.
 
@@ -291,9 +347,8 @@ The new duplicate free collection.
 
 ### Example
 ```js
-const getUser = async(id) => { /*...*/ }
 const getUserId = async(user) => { /*...*/ }
 
-await uniqByAsync(getUserId, [getUser(1), getUser(3), getUser(1)])
-// => [user1, user2]
+await uniqByAsync(getUserId, [user10, user7, user10])
+// => [user10, user7]
 ```
