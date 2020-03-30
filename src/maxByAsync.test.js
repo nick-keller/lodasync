@@ -7,13 +7,13 @@ test('maxByAsync', async() => {
   await expect(
     maxByAsync(
       callback,
-      p([p(7), p(6), p(9), p(13)]),
+      p([p(6), p(7), p(9), p(13)]),
     ),
   ).resolves.toEqual(7)
 
   expect(callback.mock.calls).toEqual([
-    [7, 0, [p(), p(), p(), p()]],
-    [6, 1, [p(), p(), p(), p()]],
+    [6, 0, [p(), p(), p(), p()]],
+    [7, 1, [p(), p(), p(), p()]],
     [9, 2, [p(), p(), p(), p()]],
     [13, 3, [p(), p(), p(), p()]],
   ])
