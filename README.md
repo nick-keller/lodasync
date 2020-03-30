@@ -15,11 +15,11 @@ npm i lodasync
 ```
 
 ```js
-import { mapAync } from 'lodasync'
+import { mapAsync } from 'lodasync'
  
 const getUser = async(id) => { /*...*/ }
 
-const users = await mapAync(getUser, [42, 68])
+const users = await mapAsync(getUser, [42, 68])
 ```
 
 ## Design principles
