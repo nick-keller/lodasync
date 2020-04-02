@@ -15,9 +15,16 @@ working with promises, arrays, and asynchronous callbacks.
 - Do not re-invent the wheel and rely on fully tested and documented code
 - Use functions that are performance oriented, don't waste time benchmarking yourself
 
+```js
+import { filterAsync } from 'lodasync'
+ 
+const users = await filterAsync(async(user) => {
+  // => use async code! 🎉
+}, getUsers())
+```
+
 ## Table of contents
 - [Getting started](#getting-started)
-- [Design principles](#design-principles)
 - [API](#api)
   - [everyAsync(callback, collection)](#everyasynccallback-collection)
   - [filterAsync(callback, collection)](#filterasynccallback-collection)
@@ -31,6 +38,7 @@ working with promises, arrays, and asynchronous callbacks.
   - [mapAsync(callback, collection)](#mapasynccallback-collection)
   - [maxByAsync(callback, collection)](#maxbyasynccallback-collection)
   - [minByAsync(callback, collection)](#minbyasynccallback-collection)
+  - [propsAsync(object)](#propsasyncobject)
   - [reduceAsync(callback, initialValue, collection)](#reduceasynccallback-initialvalue-collection)
   - [someAsync(callback, collection)](#someasynccallback-collection)
   - [sortByAsync(callback, collection)](#sortbyasynccallback-collection)
@@ -42,117 +50,56 @@ npm i lodasync
 ```
 In Node.js and in a browser:
 ```js
-import { mapAsync } from 'lodasync'
- 
-const getUser = async(id) => { /*...*/ }
+import { 
+  mapAsync, 
+  flowAsync, 
+  filterAsync, 
+  flatMapAsync, 
+  uniqByAsync, 
+  getAsync, 
+} from 'lodasync'
 
-const users = await mapAsync(getUser, [42, 68])
-```
+// Some async function
+const getUser = async(id) => db('users').where('id', id) 
 
-## Design principles
-This library is developed with a few design principles in mind that should 
-provide the best developer experience possible while keeping performance at a 
-top priority. 
+// Write async code like you write synchronous code
+const users = await mapAsync(getUser, ['user-1-id', 'user-2-id'])
 
-It is recommended that you go through this list to completely 
-understand how Lodasync works and how to use it efficiently. 
+// Pass promises as arguments to any method
+const users = await mapAsync(getUser, await getUserIds()) // Don't ❌
+const users = await mapAsync(getUser, getUserIds()) // Do ✅
 
-### Curried parameters
-Currying is a popular technique in functional programming, it let's you to 
-interchangeably write:
-```js
-await reduceAsync(callback, initialValue, collection)
-await reduceAsync(callback, initialValue)(collection)
-await reduceAsync(callback)(initialValue, collection)
-await reduceAsync(callback)(initialValue)(collection)
-```
+// And even array of promises
+const users = await mapAsync(getUser, [await promiseId1, await promiseId2]) // Don't ❌
+const users = await mapAsync(getUser, [promiseId1, promiseId2]) // Do ✅
 
-This allows you to create partially applied functions like so:
-```js
-const getUsers = mapAsync(async(id) => await getUser(id))
+// Callback arguments are always resolved
+const users = await filterAsync(async(userId) => isAdmin(await userId), [promiseId1, promiseId2]) // Don't ❌
+const users = await filterAsync(isAdmin, [promiseId1, promiseId2]) // Do ✅
 
-// Or even better
+// Returned array elements are always resolved
+const users = await mapAsync(getUser, ['user-1-id', 'user-2-id'])
+const name = (await users[0]).name // Don't ❌
+const name = users[0].name // Do ✅
+
+// All methods are curried
 const getUsers = mapAsync(getUser)
+const users = await getUsers(['user-1-id', 'user-2-id'])
 
-// Which then can be called like so
-const users = await getUsers([36, 28, 76])
-```
-
-Another common use-case for partially applied functions is chaining them with `flowAsync`:
-```js
-const getAuthorsFromPublishedArticles = flowAsync(
+// Curry is useful for chaining
+const authors = await flowAsync(
   mapAsync(getArticle),
-  filterAsync(isArticlePublished),
-  flatMapAsync(getArticleAuthors),
-  uniqByAsync(getAuthorId),
-)
+  filterAsync(isPublished),
+  flatMapAsync(getAuthors),
+  uniqByAsync(getAsync('id')),
+)(['article-1-id', 'article-2-id', /*...*/])
 
-const authors = await getAuthorsFromPublishedArticles([48, 96, 31])
 ```
 
-
-### Promises as parameters
-All parameters accept promises, you do not need to await them. 
-This should let you to write cleaner code:
-```js
-// Don't
-await filterAsync(isUserAuthorized, await users)
-
-// Do
-await filterAsync(isUserAuthorized, users)
-```
-
-### Async callbacks
-All callbacks can be asynchronous, this is probably the most useful feature of 
-this library:
-```js
-const isUserAuthorized = async(user) => { /*...*/ }
-
-await filterAsync(isUserAuthorized, users)
-```
-
-### Resolved callbacks parameters
-Received arguments are always resolved, you do not need to await them:
-```js
-// Don't 
-await mapAsync(async(user) => (await user).name, users)
-
-// Do
-await mapAsync((user) => user.name, users)
-```
-
-For arguments that are arrays, elements are not resolved:
-```js
-const getUser = async(id) => { /*...*/ }
-
-// Don't 
-await mapAsync((user, index, array) => array[0].name, [getUser(1), getUser(2)])
-
-// Do
-await mapAsync(async(user, index, array) => (await array[0]).name, [getUser(1), getUser(2)])
-```
-
-### Callbacks called in parallel
-Callbacks are always called in parallel, and on all elements to maximize parallelism.
+## Note on parallelism
+Callbacks are always called in parallel on all elements to maximize speed.
 This also includes methods like `findAsync` or `findIndexAsync`, even tho their 
 synchronous counterpart stops on the first match.
-
-### Promises as return values
-The return value is always a promise.
-```js
-// Still need to await
-const result = await mapAsync(x => x * 2, [3, 4])
-```
-If the return value resolves to an array, all values are also resolved.
-```js
-const users = await mapAsync(getUser, [65, 13])
-
-// Don't
-(await users[0]).name
-
-// Do
-users[0].name
-```
 
 # API
 
@@ -186,24 +133,20 @@ const isAuthorized = async(user) => { /*...*/ }
 
 const getAuthorizedUsers = flowAsync(
   mapAsync(getUser), 
-  filterAsync(isAuthorized)
+  filterAsync(isAuthorized),
 )
 
 const authorizedUsers = await getAuthorizedUsers(getUserIds())
 ```
 
 ## getAsync(path, object)
-Works like `getOrAsync` with `undefined` as its `defaultValue`.
-
-## getOrAsync(defaultValue, path, object)
 Gets the value at `path` of `object`. 
-If the resolved value is undefined, the defaultValue is returned in its place.
 
 ### Arguments
-- `defaultValue`\
-  The value returned for `undefined` resolved values.
 - `path`\
-  An array of keys, or a string that should be split on dots.
+  An array of keys, or a string that should be split on dots. 
+  When its a string, `path` does not support the array notation `[index]`, 
+  use the dot notation instead `.index`
 - `object`\
   The object from which to get the property.
 
@@ -223,12 +166,19 @@ const article = {
   ]),
 }
 
-await getOrAsync(null, 'authors.0.name', article) // => 'John'
-// Or
-await getOrAsync(null, ['author', 0, 'name'], article) // => 'John'
+await getAsync('authors.0.name', article) // => 'John'
+await getAsync(['author', 0, 'name'], article) // => 'John'
 
-await getOrAsync('defaultName', 'authors.3.name', article) // => 'defaultName'
+// Often used to get an object key of a promise
+const name = await getUser().then(user => user.name) // Don't ❌
+const name = await getAsync('name', getUser()) // Do ✅
+
+// Or as an iteratee
+const names = await mapAsync(getAsync('name'), getUsers())
 ```
+
+## getOrAsync(defaultValue, path, object)
+Works like `getAsync` with a custom `defaultValue` when the resolved value is undefined.
 
 ## groupByAsync(callback, collection)
 Creates an object composed of keys generated from the results of running each element of `collection` thru `callback`. 
@@ -316,6 +266,25 @@ const getItemPrice = async(item) => { /*...*/ }
 
 await minByAsync(getItemPrice, [item1, item2, item3])
 // => item2
+```
+
+## propsAsync(object)
+Returns a promise that resolves when all values of `object` are resolved.
+Mostly used for parallelism.
+
+### Example
+```js
+// This is run sequentially
+const user = await getUser(userId)
+const article = await getArticle(articleId)
+const comment = await getComment(commentId)
+
+// This is run in parallel
+const { user, article, comment } = await propsAsync({
+  user: getUser(userId),
+  article: getArticle(articleId),
+  comment: getComment(commentId),
+})
 ```
 
 ## reduceAsync(callback, initialValue, collection)
