@@ -1,14 +1,14 @@
 {
   "name": "lodasync",
-  "version": "1.0.5",
-  "description": "Async utility functions",
-  "main": "src/index.js",
+  "version": "1.0.6",
+  "description": "Functional async utility functions for clean code",
   "repository": "nick-keller/lodasync",
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
     "ci": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
+  "keywords": ["async", "await", "promise", "lodash"],
   "author": "Nicolas Keller",
   "license": "MIT",
   "devDependencies": {
