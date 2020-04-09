@@ -32,6 +32,7 @@ const users = await filterAsync(async(user) => {
   - [findIndexAsync(callback, collection)](#findindexasynccallback-collection)
   - [flatMapAsync(callback, collection)](#flatmapasynccallback-collection)
   - [flowAsync(...callbacks)](#flowasynccallbacks)
+  - [forEachAsync(callback, collection)](#foreachasynccallback-collection)
   - [getAsync(path, object)](#getasyncpath-object)
   - [getOrAsync(defaultValue, path, object)](#getorasyncdefaultvalue-path-object)
   - [groupByAsync(callback, collection)](#groupbyasynccallback-collection)
@@ -137,6 +138,30 @@ const getAuthorizedUsers = flowAsync(
 )
 
 const authorizedUsers = await getAuthorizedUsers(getUserIds())
+```
+
+## forEachAsync(callback, collection)
+Iterate over an array in parallel.
+
+### Arguments
+- `callback`\
+  A function that is invoked for each element.
+  It takes the following arguments:
+  - `element`\
+    The current element in the collection.
+  - `index`\
+    The index of the current element in the collection.
+  - `collection`\
+    The collection.
+- `collection`\
+  The collection to iterate over.
+
+### Return value
+Always returns `undefined`.
+
+### Example
+```js
+await forEachAsync(inviteUser, getUsers())
 ```
 
 ## getAsync(path, object)
